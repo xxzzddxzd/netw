@@ -1,0 +1,7 @@
+#!/bin/bash
+killall Python
+cd /Users/xuzhengda/Documents/codespace_pc/netw/
+/usr/local/bin/python nese.py fl > log/fl
+/usr/local/bin/python nese.py sb > log/sb
+/usr/local/bin/python nese.py mrck > log/mrck
+

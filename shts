@@ -1,0 +1,6 @@
+#!/bin/bash
+killall Python
+cd /Users/xuzhengda/Documents/codespace_pc/netw/
+/usr/local/bin/python nese.py ts > log/ts
+
+
