@@ -1,0 +1,362 @@
+syntax = "proto3";
+package apb.api.user;
+
+
+// python -m grpc_tools.protoc --python_out=. --grpc_python_out=. -I. helloworld.proto 
+message UserDataGetResponse{
+    map<string,string> userDataJson_=1;
+}
+message GachaModeBasic{
+    string naviCharacterCommentAssetName_=1;
+    string gachaAssetName_=2;
+}
+message GetGachaRequest{
+    repeated int32 gaid=1;
+}
+message Gacha{
+    int32 gachaId_=1; 
+int32 gachaLabelType_=2; 
+int32 gachaModeType_=3; 
+int32 gachaAutoResetType_=4; 
+int32 gachaAutoResetPeriod_=5; 
+//6
+bytes para_6=6;
+//repeated bytes gachaUnlockCondition_=7;
+bool isUserGachaUnlock_=8; 
+bytes para_9=9;
+//repeated bytes para_10=10;
+// Timestamp startDatetime_=; 9 
+// Timestamp endDatetime_=; 10
+repeated bytes gachaPricePhase_=11;
+int32 relatedMainQuestChapterId_=12; 
+int32 relatedEventQuestChapterId_=13; 
+int32 promotionMovieAssetId_=14; 
+bytes gachaMode_=15; 
+GachaModeBasic gachaModeCase_=16; 
+}
+message GetGachaResponse{
+    map<int32,Gacha> userDataJson_=1;
+}
+message UserDataGetRequest{
+    repeated string tableName_=1;
+}
+message SellRequest{
+    repeated string userWeaponUuid_=1;
+}
+message EnhanceRequest{
+    string userPartsUuid_=1;
+}
+message EnhanceResponse{
+    bool issuccess=1;
+}
+message SellPossession{
+int32 materialId_=1;
+int32 count_=2;
+}
+message cailiaoSellRequest{
+    repeated SellPossession materialPossession_=1;
+}
+message CageMeasurableValues{
+    int32 runningDistanceMeters_=1; 
+int32 mamaTappedCount_=2; 
+}
+message GetMamaBannerRequest{
+    CageMeasurableValues c=1;
+}
+message StartExploreRequestReq{
+    int32 exploreId_=1; 
+    int32 useConsumableItemId_=2;
+}
+message FinishExploreRequest{
+    int32 exploreId_=1; 
+    int32 score_=2; 
+    bytes vt_=3;
+}
+message ExploreReward{
+    int32 possessionType_=1; 
+    int32 possessionId_=2; 
+    int32 count_=3; 
+}
+message FinishExploreResponse{
+    int32 acquireStaminaCount_=1;
+    repeated ExploreReward exploreReward_=2;
+
+}
+message DrawRequest{
+int32 gachaId_=1;
+int32 gachaPricePhaseId_=2;
+int32 execCount_=3;
+}
+message CheckBeforeGamePlay{
+    
+}
+
+message FriendUser{
+    int64 playerId_=1;
+    bool cheerReceived_=7;
+    bool cheerSent_=8;
+}
+message User{
+    int64 playerId_=1;
+}
+message GetFriendListResponse{
+    repeated FriendUser friendUser_=1;
+}
+message GetFriendRequestListResponse{
+    repeated User friendUser_=1;
+}
+
+message UpdateEventQuestSceneProgressReq{
+    int32 questSceneId_=1;
+}
+message UseEffectItemRequest{
+    int32 consumableItemId_=1;
+    int32 count_=2;
+}
+message SendFriendRequest{
+    int64 pid=1;
+}
+message FinishEventQuestRequest{
+    int32 eventQuestChapterId_=1;
+int32 questId_=2;
+bool isRetired_=3;
+bool isAnnihilated_=4;
+bool isAutoOrbit_=5;
+int32 storySkipType_=6;
+string vt_=7;
+}
+message ReceiveMissionRewardsById{
+    repeated int32 mid=1;
+}
+message ReceiveGiftRequest{
+    repeated string uuid_=1;
+}
+message GiftCommon{
+int32 possessionType_=1;
+int32 possessionId_=2;
+int32 count_=3;
+int32 descriptionGiftTextId_=5;
+}
+message NotReceivedGift{
+    GiftCommon GiftCommon_=1;
+    string userGiftUuid_=3;
+}
+message GetGiftListResponse{
+repeated NotReceivedGift gift_= 1;
+int32 totalPageCount_= 2;
+int64 nextCursor_= 3;
+int64 previousCursor_= 4;
+repeated DiffData diffUserData_= 99;
+}
+message GetGiftListRequest{
+repeated int32 rewardKindType_=1;
+int32 expirationType_=2;
+bool isAscendingSort_=3;
+int64 nextCursor_=4;
+int64 previousCursor_=5;
+int32 getCount_=6;
+}
+message SetTutorialProgressRequest{
+    int32 tutorialType_=1;
+    int32 progressPhase_=2;
+}
+message DeckCharacter{
+string userCostumeUuid_= 1;
+string mainUserWeaponUuid_= 2;
+repeated string subUserWeaponUuid_= 3;
+string userCompanionUuid_= 4;
+repeated string userPartsUuid_= 5;
+}
+message Deck{
+DeckCharacter character01_= 1;
+DeckCharacter character02_= 2;
+DeckCharacter character03_= 3;
+}
+message SetTutorialProgressAndReplaceDeckRequest{
+int32 tutorialType_=1; 
+int32 progressPhase_=2; 
+int32 deckType_=3; 
+int32 userDeckNumber_=4; 
+Deck deck_=5; 
+}
+message FinishMainQuestRequest{
+int32 questId_=1; 
+bool isRetired_=2; 
+bool isMainFlow_=3; 
+bool isAnnihilated_=4;
+bool isAutoOrbit_=5; 
+int32 storySkipType_=6;
+string vt_=7;
+}
+message StartEventQuest{
+    int32 eventQuestChapterId_=1;
+int32 questId_=2;
+int32 userDeckNumber_=3;
+bool isBattleOnly_=4;
+int32 maxAutoOrbitCount_=5;
+}
+message BattleDetail{
+    int32 characterDeathCount_=1;
+    int32 maxDamage_=2;
+}
+message FinishWaveRequest{
+    bytes battleBinary_=1;
+    BattleDetail battleDetail_=2;
+}
+
+message StartMainQuest{
+int32 questId_=1;
+bool isMainFlow_=2;
+int32 userDeckNumber_=3;
+bool isBattleOnly_=4;
+int32 maxAutoOrbitCount_=5;
+bytes cageMeasurableValues_=6;
+}
+message UpdateMainFlowSceneProgress{
+    int32 questSceneId_=1;
+}
+
+message SetUserNameRequest{
+    string name=1;
+}
+service UserService{
+    rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse){}
+    rpc Auth(AuthUserRequest) returns (AuthUserResponse){}
+    rpc GameStart(GameStartReq) returns (GameStartRes) {}
+}
+message GameStartReq{
+}
+message GameStartRes{
+}
+
+
+message DiffData{
+string updateRecordsJson_=1;
+string deleteKeysJson_=2;
+}
+
+message RegisterUserRequest{
+    string uuid_= 1;
+string terminalId_= 2;
+string registerSignature_= 3;
+}
+message RegisterUserResponse{
+int64 userId_= 1;
+string signature_= 2;
+map<string,DiffData> diffUserData_= 99;
+}
+
+message UserDeviceInherent{
+string identifierForVendor_= 1;
+string deviceToken_= 2;
+string macAddress_= 3;
+string registrationId_= 4;
+}
+
+message AuthUserRequest{
+string uuid_= 1;
+string signature_= 2;
+string advertisingId_=3;
+bool isTrackingEnabled_=4;
+UserDeviceInherent deviceInherent_= 5;
+string tr_= 6;
+}
+message Timestamp{
+int64 seconds_=1;
+}
+message AuthUserResponse{
+string sessionKey_= 1;
+Timestamp expireDatetime_= 2;
+map<string,DiffData> diffUserData_= 99;   
+}
+message differResponse{
+ map<string,DiffData> diffUserData_= 1;      
+}
+message differResponse2{
+repeated bytes gacha_=1;
+ map<string,DiffData> diffUserData_= 2;      
+}
+message stringResponse{
+    string str=1;
+}
+
+message intmessage{
+    int32 p1=1;
+}
+message GachaItem{
+    int32 possessionType_=1; 
+int32 possessionId_=2; 
+int32 count_=3; 
+int32 promotionOrder_=4; 
+bool isNew_=5; 
+}
+message DrawGachaOddsItem{
+    GachaItem gachaItem_ =1;
+    GachaItem gachaItemBonus_=2;
+    int32 duplicationBonusGrade_=3;
+}
+message GachaUnlockCondition{
+int32 gachaUnlockConditionType_=1; 
+int32 conditionValue_=2; 
+}
+
+message GachaOddsFixedRarity{
+    int32 fixedRarityTypeLowerLimit_=1;
+    int32 fixedCount_=2;
+}
+message GachaBonus{
+int32 possessionType_=1; 
+int32 possessionId_=2; 
+int32 count_=3; 
+}
+message GachaPricePhase{
+    int32 gachaPricePhaseId_=1; 
+bool isEnabled_=2; 
+// Timestamp endDatetime_=; 
+int32 limitExecCount_=4; 
+int32 userExecCount_=5; 
+int32 gachaBadgeType_=6; 
+int32 priceType_=7; 
+int32 priceId_=8; 
+int32 price_=9; 
+int32 regularPrice_=10; 
+int32 drawCount_=11; 
+int32 eachMaxExecCount_=12; 
+repeated GachaBonus gachaBonus_=13; 
+GachaOddsFixedRarity gachaOddsFixedRarity_=14; 
+}
+
+
+message DrawResponse{
+    Gacha gacha_=1;
+    //repeated DrawGachaOddsItem gachaResult_=2;
+    //repeated bytes gachaBonus_=3;
+    map<string,DiffData> diffUserData_= 4;   
+}
+message ResetBoxGachaRequest{
+    int32 gachaId_=1;
+}
+message BattleDropReward{
+int32 questSceneId_=1; 
+int32 battleDropCategoryId_=2; 
+int32 battleDropEffectId_=3;
+}
+
+message StartEventQuestResponse{
+ repeated BattleDropReward    battleDropReward_=1;
+}
+
+message StartBattleRequest{
+    int64 opponentPlayerId_=1;
+    int32 useDeckNumber_=2; 
+}
+message MatchingOpponent{
+    int64 playerId_=1;
+}
+message GetMatchingListResponse{
+    repeated MatchingOpponent matching_=1;
+}
+message FinishBattleRequest{
+    int64 opponentPlayerId_=1;
+bool isVictory_=2;
+}

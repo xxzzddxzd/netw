@@ -280,14 +280,23 @@ class reqfuncmjzj:
                 self.dopvp()
                 print('done pvp')
         elif cmd=='tly1': #体力药小08b9171001
-            self.req_hex('/apb.api.consumableitem.ConsumableItemService/UseEffectItem','08b9171020')
+            if self.stam>150:
+                print(self.stam)
+                return
+            self.req_hex('/apb.api.consumableitem.ConsumableItemService/UseEffectItem','08b9171047')
             self.getuser()
             print(self.stam)
         elif cmd=='tly2': #体力药中
+            if self.stam>150:
+                print(self.stam)
+                return
             self.req_hex('/apb.api.consumableitem.ConsumableItemService/UseEffectItem','08ba17100a')
             self.getuser()
             print(self.stam)
         elif cmd=='tly3': #体力药大
+            if self.stam>150:
+                print(self.stam)
+                return
             self.req_hex('/apb.api.consumableitem.ConsumableItemService/UseEffectItem','08bb171005')
             self.getuser()
             print(self.stam)
@@ -299,13 +308,15 @@ class reqfuncmjzj:
             self.getuser()
             print(self.stam)
         elif cmd=='tsq':
-            print(self.stam)
             while 1:
                 self.StartExplore(1,2001)
                 # time.sleep(100)
                 self.FinishExplore(1)
                 self.getuser()
                 print(self.stam)
+                if self.stam>600:
+                    return
+
         elif cmd=='sb':  #买体力药
             self.req_hex('/apb.api.shop.ShopService/RefreshUserData','')
             self.req_hex('/apb.api.shop.ShopService/Buy','08d10f120608d19a0c1014')
