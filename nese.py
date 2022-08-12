@@ -99,29 +99,25 @@ class reqfuncmjzj:
             k = k + chr(8).encode('utf-8') * 8
         return k
     def aa(self):
-        # a=open('reqf/enc_in_1').read()
-        a=open('battlereq/za41_77','rb').read()
+        # a=open('battlereq/za21_52','rb').read()
         # print(a)
-        print(a)
-        aaa=pb.StartEventQuest()
-        aaa.ParseFromString(a)
-        # aaa.gachaId_=99
-        # aaa.questId_=110080
-        print(aaa)
-        return
-        
-        da='08f40310c79a0c18013004c20c2863333331633461623063383733386464636539646464346263623365656333643631633237663562'
+        # aaa=pb.StartEventQuest()
+        # aaa.ParseFromString(a)
+        # print(aaa)
+        # return
+            
+        da='08ba850610bcdb061804'
         da=bytes.fromhex(da)
         # print da.encode('hex')
         # da=open('battlereq/111').read()
         # print da.encode('hex')
 
-        aaa=pb.FinishMainQuestRequest()
+        aaa=pb.StartEventQuest()
         aaa.ParseFromString(da)
         # aaa.gachaId_=99
         # aaa.questId_=110080
         print(aaa)
-        print(aaa.SerializeToString().encode('hex'))
+        # print(aaa.SerializeToString().encode('hex'))
         return
     def mrck(self):    
 
@@ -199,6 +195,75 @@ class reqfuncmjzj:
                     times-=1
             self.getuser()
             print(self.stam)
+        elif cmd=='qh':
+            self.req_hex('/apb.api.weapon.WeaponService/EnhanceByMaterial','0a2436613034613337312d336435352d343762372d623963652d346232366165313361653238120608c19a0c1001')
+        elif cmd=='get':
+            para=str(sys.argv[2])
+            self.getwhat(para)
+        elif cmd=='qe':
+            # za11 99001 110008 
+            # za21 99002 110018   za2n1 99002 110011
+            if len(sys.argv)<4:
+                print('need eventQuestChapterId_ and questId_')
+                pass
+            eventQuestChapterId_= sys.argv[2]
+            questId_=sys.argv[3]
+            targettimes=0
+            if len(sys.argv)==5:
+                targettimes=int(sys.argv[4])
+            stamori=self.stam
+            self.doquest_event_new(eventQuestChapterId_,questId_)
+            self.getuser()
+            if targettimes==1:
+                return
+            targettimes-=1
+            stamcost=stamori-self.stam
+            if stamcost<0:
+                stamcost=40
+            if stamcost!=0:
+                times=int(self.stam/stamcost-1)
+                if targettimes<=0 or targettimes>times:
+                    targettimes=times
+            nowtime=0
+            while nowtime<targettimes:
+                  self.doquest_event_new(eventQuestChapterId_,questId_)
+                  nowtime+=1
+                  print('now',nowtime,'targettimes',targettimes)
+        elif cmd=='qjqq':
+            eqcid=99002
+            qq=110012
+
+            while qq<10100:
+                print(qq)
+                self.doquest_jq_new(qq)
+                qq+=1
+        elif cmd=='qjq':
+            # 10065 第八章hard1
+            if len(sys.argv)<3:
+                print('need questId_')
+                pass
+            questId_=sys.argv[2]
+            targettimes=0
+            if len(sys.argv)==4:
+                targettimes=int(sys.argv[3])
+            stamori=self.stam
+            self.doquest_jq_new(questId_)
+            self.getuser()
+            if targettimes==1:
+                return
+            targettimes-=1
+            stamcost=stamori-self.stam
+            if stamcost<0:
+                stamcost=40
+            if stamcost!=0:
+                times=int(self.stam/stamcost-1)
+                if targettimes<=0 or targettimes>times:
+                    targettimes=times
+            nowtime=0
+            while nowtime<targettimes:
+                  self.doquest_jq_new(questId_)
+                  nowtime+=1
+                  print('now',nowtime,'targettimes',targettimes)
         elif cmd=='qd':
             jsq=json.loads(open('battlereq/config').read())
             if len(sys.argv)<3: #所有每日1次全部打完
@@ -338,6 +403,152 @@ class reqfuncmjzj:
             print(self.gold)
         elif cmd=='m':
             self.cleanmail()
+        elif cmd=='hdck':
+            times=1000
+            roll=7
+            hdid=300000
+            # times=int(sys.argv[3])
+            # roll=int(sys.argv[2])
+            # try:
+            #     while 1:
+            self.GachaService_Draw(hdid+roll,hdid+roll,times)
+            print('gacha done')
+            self.GachaService_ResetBoxGachaRequest(hdid+roll)
+            # except:
+                # print('no more ticket')
+            
+            return
+        elif cmd=='sp':
+            # while 1:
+            self.partslist()
+        elif cmd=='rw': #任务
+            self.req_hex('/apb.api.mission.MissionService/ReceiveMissionRewardsById','0a0701020304050706')
+    def partslist(self):
+        parts_dic = self.partslistinit()
+        # 属性过滤
+        tosave = []
+        need=['PT_ATTACK','CRITICAL_ATTACK','CRITICAL_RATIO']
+        for part in parts_dic:
+            print(parts_dic[part])
+            if ( \
+                parts_dic[part].__contains__('PT_ATTACK') and 'x' == parts_dic[part]['PT_ATTACK'][0]\
+            and parts_dic[part].__contains__('CRITICAL_ATTACK') \
+            and parts_dic[part].__contains__('CRITICAL_RATIO') \
+            and 60 == parts_dic[part]['CRITICAL_ATTACK'][1]\
+            and 50 == parts_dic[part]['CRITICAL_RATIO'][1]  \
+            ) \
+            or parts_dic[part]['level']!=1:
+            # if parts_dic[part]['level']!=1: #sell all
+            # if  need[0] in parts_dic[part] and need[1] in parts_dic[part] and need[2] in parts_dic[part]:
+                # print part,parts_dic[part]
+                print(parts_dic[part])
+                tosave.append(part)
+        # return
+        print('to save',len(tosave))
+        # print(tosave)
+        # rev=all_parts_dic
+        todelete = []
+        for line in parts_dic:
+            # print line
+            if line not in tosave : #and parts_dic[line]['level']==1
+                todelete.append(line)
+        print('to delete',len(todelete))
+        # return
+        if len(todelete)>1:
+            self.sellpbycon(todelete)
+        
+        # return
+        #升级
+        for line in tosave:
+            sc =0
+            # try:  
+            while sc<15-parts_dic[line]['level']:
+                sc+=self.enhance(line)
+                # print '\r',sc,
+            print('done', end=' ')
+            sys.stdout.flush()
+    def partslistinit(self):
+        whitelist=[8020,8040,8060]
+        a=['IUserParts','IUserPartsStatusSub']
+        rev0=self.GetUserData(a)
+        rev=json.loads(rev0.userDataJson_[a[0]])
+        print(len(rev))
+        print(rev)
+        parts_dic={}
+        for line in rev:
+            # print(line)
+            name = str(line['userPartsUuid'])
+            if line['partsId'] in whitelist and  name not in parts_dic :
+                # print line
+                parts_dic[name]={'id':line['partsId'],'level':line['level']}
+        # all_parts_dic = parts_dic
+
+
+        statuskind=['UNKNOWN','AGILITY','PT_ATTACK','CRITICAL_ATTACK','CRITICAL_RATIO','EVASION_RATIO','HP','VITALITY']
+        statustype=['UNKNOWN','+','x']
+        statusmax=[0,0,0,60,50,0,0,0]
+        # max_ca=0
+        # max_cr=0
+        # max_atk=0
+        rev=json.loads(rev0.userDataJson_[a[1]])
+        print('total:', len(rev))
+        for line in rev:
+            name = str(line['userPartsUuid'])
+            if name  in parts_dic:
+                # str1 = statuskind[line['statusKindType']]+statustype[line['statusCalculationType']]+str(line['statusChangeValue'])+'('+str(line['level'])+')'
+                parts_dic[name][statuskind[line['statusKindType']]]=[statustype[line['statusCalculationType']],line['statusChangeValue'],line['level']]
+                # if line['statusCalculationType'] == 2 and line['statusChangeValue'] > statusmax[line['statusKindType']] :
+                #     statusmax[line['statusKindType']] = line['statusChangeValue']
+            else:
+                # print line
+                pass
+        print('parts_dic:', len(parts_dic))
+        return parts_dic
+    def enhance(self,uuid):
+        
+        metadata=self.refreshMetadata()
+        # print metadata
+        body=pb.EnhanceRequest(userPartsUuid_= uuid).SerializeToString()
+        # print body.encode('hex')
+        body=self.encb(body)
+        requester = self.channel.unary_unary('/apb.api.parts.PartsService/Enhance',request_serializer=self.ruencb,response_deserializer=self.redecb)
+        resp,call=requester.with_call(body,metadata=metadata)
+        rev=self.decb(resp)
+        self.reloadmeta(call.trailing_metadata())
+        revj=pb.EnhanceResponse.FromString(rev)
+        return revj.issuccess
+    def sellpbycon(self,parts):
+        if len(parts)<1:
+            return
+        todelete=[]
+        count=0
+        i=0
+        print(len(parts),'to sell')
+        while i<len(parts):
+            todelete.append(str(parts[i]))
+            count+=1
+            if count>=10:
+                print('sell', end=' ')
+                self.sellparts(todelete)        
+                count=0
+                todelete=[]
+                sys.stdout.flush()
+            i+=1
+        if len(todelete)>0:
+            self.sellparts(todelete)
+
+
+
+    def sellparts(self,parts):
+        # print '>call /apb.api.explore.ExploreService/StartExplore'
+        metadata=self.refreshMetadata()
+        # print metadata
+        body=pb.SellRequest(userWeaponUuid_= parts).SerializeToString()
+        body=self.encb(body)
+        requester = self.channel.unary_unary('/apb.api.parts.PartsService/Sell',request_serializer=self.ruencb,response_deserializer=self.redecb)
+        resp,call=requester.with_call(body,metadata=metadata)
+        rev=self.decb(resp)
+        self.reloadmeta(call.trailing_metadata())
     def mau(self):
         rev=self.req_hex('/apb.api.user.UserService/Auth','0a1331353437343232363634393435303431343038122c6f6a7578784f7944534137457a423371714e2b6a5171786e583253643543674e714b4e2b452f52796b54773d1a2430303030303030302d303030302d303030302d303030302d3030303030303030303030303282027b227472223a5b7b227469223a226c72222c22626f223a22227d2c7b227469223a22696a62222c22626f223a2254727565227d2c7b227469223a22686967222c22626f223a2246616c7365227d2c7b227469223a22616373222c22626f223a22227d2c7b227469223a22706572222c22626f223a2246616c7365227d2c7b227469223a22696d75222c22626f223a2246616c7365227d2c7b227469223a226972222c22626f223a2246616c7365227d2c7b227469223a226961222c22626f223a2246616c7365227d2c7b227469223a226d73222c22626f223a2253797374656d2e537472696e675b5d227d2c7b227469223a22696373222c22626f223a22227d5d7d3a81020a13313534373432323636343934353034313430381a203235393439333832616237306638653263623234663036333130333030323766320f757365725f333630373138373236353a04313635304094384a06312e332e333850b9175a0f757365725f333630373138373236356213313534373432323636343934353034313430386801724e41463036454330342d314542422d343333412d424143332d3438443335394232433130363b694f532031342e333b6950686f6e6531322c353b636f6d2e6b6f6d6f652e6e6965727265696e696f737a045769666982012446453943353733452d464538452d343632352d424536302d363730313032303232443346')
         revj=pb.AuthUserResponse.FromString(rev)
@@ -424,6 +635,32 @@ class reqfuncmjzj:
         resp,call=requester.with_call(body,metadata=metadata)
         rev=self.decb(resp)
         self.reloadmeta(call.trailing_metadata())
+    def GachaService_ResetBoxGachaRequest(self,gachaId_):
+        # print '>call GachaService/GetGachaList'
+        metadata=self.refreshMetadata()
+        # print metadata
+        body=pb.ResetBoxGachaRequest(gachaId_=gachaId_).SerializeToString()
+        # body='08e7a712'.decode('hex')
+        body=self.encb(body)
+        requester = self.channel.unary_unary('/apb.api.gacha.GachaService/ResetBoxGacha',request_serializer=self.ruencb,response_deserializer=self.redecb)
+        resp,call=requester.with_call(body,metadata=metadata)
+        rev=self.decb(resp)
+        self.reloadmeta(call.trailing_metadata())
+        revj=pb.differResponse2.FromString(rev)
+    def GachaService_Draw(self,gachaId_,gachaPricePhaseId_,execCount_):
+        # print '>call GachaService/Draw',gachaId_,gachaPricePhaseId_,execCount_
+        metadata=self.refreshMetadata()
+        # print metadata
+        body=pb.DrawRequest(gachaId_=gachaId_,gachaPricePhaseId_=gachaPricePhaseId_,execCount_=execCount_).SerializeToString()
+        # print body.encode('hex')
+        body=self.encb(body)
+        requester = self.channel.unary_unary('/apb.api.gacha.GachaService/Draw',request_serializer=self.ruencb,response_deserializer=self.redecb)
+        resp,call=requester.with_call(body,metadata=metadata)
+        rev=self.decb(resp)
+        self.reloadmeta(call.trailing_metadata())
+        revj=pb.DrawResponse.FromString(rev)
+        # print revj
+        return revj
     def QuestService_FinishMainQuest(self,qid,isMainFlow=True):
         # print '>call QuestService/FinishMainQuest'
         metadata=self.refreshMetadata()
@@ -518,6 +755,85 @@ class reqfuncmjzj:
         rev=self.decb(resp)
         self.reloadmeta(call.trailing_metadata())
         return rev
+    def req_binq_new(self,path,binq,needsign=0):
+        # print '>call ',path,binq
+        metadata=self.refreshMetadata()
+        # print metadata
+        # body=pb.StartEventQuest(questId_= qid,eventQuestChapterId_= eventQuestChapterId_,userDeckNumber_=userDeckNumber).SerializeToString()
+        body=open('battlerecord/'+binq,'rb').read()
+        if needsign==1:
+            body=bytes(body[:-40])+ self.gensha1(self.meta['x-apb-user-id']+self.meta['x-apb-token'] )
+        
+        body=self.encb(body)
+        requester = self.channel.unary_unary(path,request_serializer=self.ruencb,response_deserializer=self.redecb)
+        resp,call=requester.with_call(body,metadata=metadata)
+        rev=self.decb(resp)
+        self.reloadmeta(call.trailing_metadata())
+        return rev
+    def req_binq_EventQuest_start(self,path,binq,eventQuestChapterId_,questId_):
+        # print '>call ',path,binq
+        metadata=self.refreshMetadata()
+        body=open('battlerecord/'+binq,'rb').read()[:-40]
+        aaa=pb.StartEventQuest()
+        aaa.ParseFromString(body)
+        aaa.eventQuestChapterId_=int(eventQuestChapterId_)
+        aaa.questId_=int(questId_)
+        aaa.userDeckNumber_=4
+        body=aaa.SerializeToString()+bytes.fromhex('1804')
+        # print(''.join(['%02X' % b for b in body]))
+        body=self.encb(body)
+        requester = self.channel.unary_unary(path,request_serializer=self.ruencb,response_deserializer=self.redecb)
+        resp,call=requester.with_call(body,metadata=metadata)
+        rev=self.decb(resp)
+        self.reloadmeta(call.trailing_metadata())
+        return rev
+    def req_binq_MainQuest_start(self,path,binq,questId_):
+        # print '>call ',path,binq
+        metadata=self.refreshMetadata()
+        body=open('battlerecord/'+binq,'rb').read()[:-40]
+        aaa=pb.StartMainQuest()
+        aaa.ParseFromString(body)
+        aaa.questId_=int(questId_)
+        aaa.userDeckNumber_=4
+        body=aaa.SerializeToString()+bytes.fromhex('1804')
+        # print(''.join(['%02X' % b for b in body]))
+        body=self.encb(body)
+        requester = self.channel.unary_unary(path,request_serializer=self.ruencb,response_deserializer=self.redecb)
+        resp,call=requester.with_call(body,metadata=metadata)
+        rev=self.decb(resp)
+        self.reloadmeta(call.trailing_metadata())
+        return rev
+    def req_binq_EventQuest_end(self,path,binq,eventQuestChapterId_,questId_):
+        # print('>call ',path,binq)
+        metadata=self.refreshMetadata()
+        body=open('battlerecord/'+binq,'rb').read()
+        aaa=pb.FinishEventQuestRequest()
+        aaa.ParseFromString(body)
+        aaa.eventQuestChapterId_=int(eventQuestChapterId_)
+        aaa.questId_=int(questId_)
+        body=aaa.SerializeToString()
+        body=bytes(body[:-40])+ self.gensha1(self.meta['x-apb-user-id']+self.meta['x-apb-token'] )
+        body=self.encb(body)
+        requester = self.channel.unary_unary(path,request_serializer=self.ruencb,response_deserializer=self.redecb)
+        resp,call=requester.with_call(body,metadata=metadata)
+        rev=self.decb(resp)
+        self.reloadmeta(call.trailing_metadata())
+        return rev
+    def req_binq_MainQuest_end(self,path,binq,questId_):
+        # print('>call ',path,binq)
+        metadata=self.refreshMetadata()
+        body=open('battlerecord/'+binq,'rb').read()
+        aaa=pb.FinishMainQuestRequest()
+        aaa.ParseFromString(body)
+        aaa.questId_=int(questId_)
+        body=aaa.SerializeToString()
+        body=bytes(body[:-40])+ self.gensha1(self.meta['x-apb-user-id']+self.meta['x-apb-token'] )
+        body=self.encb(body)
+        requester = self.channel.unary_unary(path,request_serializer=self.ruencb,response_deserializer=self.redecb)
+        resp,call=requester.with_call(body,metadata=metadata)
+        rev=self.decb(resp)
+        self.reloadmeta(call.trailing_metadata())
+        return rev
     def req_hex(self,path,binq,needsign=0):
         # print '>call ',path
         metadata=self.refreshMetadata()
@@ -574,6 +890,9 @@ class reqfuncmjzj:
         self.reloadmeta(call.trailing_metadata())
         revj=pb.UserDataGetResponse.FromString(rev)
         return revj
+    def getwhat(self,para):
+        rev=self.GetUserData([para])
+        print(rev)
     def getuser(self):
         rev=self.GetUserData(["IUserGem","IUser","IUserStatus","IUserEventQuestProgressStatus","IUserMainQuestProgressStatus"])
         self.stam=int(json.loads(rev.userDataJson_['IUserStatus'])[0]['staminaMilliValue'])/1000
@@ -664,7 +983,6 @@ class reqfuncmjzj:
         metadata=self.refreshMetadata()
         # print metadata
         body=bytes(aaa)+ self.gensha1(self.meta['x-apb-user-id']+self.meta['x-apb-token'] )
-        
         body=self.encb(body)
 
         requester = self.channel.unary_unary('/apb.api.quest.QuestService/FinishEventQuest',request_serializer=self.ruencb,response_deserializer=self.redecb)
@@ -723,6 +1041,31 @@ class reqfuncmjzj:
             return 0
         print('step wrong')
         return -1
+    def doquest_test(self,fnstep,eventQuestChapterId_,questId_):
+        self.req_binq_EventQuest_start('/apb.api.quest.QuestService/StartEventQuest',fnstep[0][0],eventQuestChapterId_,questId_)
+        self.req_binq('/apb.api.battle.BattleService/StartWave',fnstep[1][0],fnstep[1][1])
+        self.req_binq('/apb.api.battle.BattleService/FinishWave',fnstep[2][0],fnstep[2][1])
+        self.req_binq_EventQuest_end('/apb.api.quest.QuestService/FinishEventQuest',fnstep[3][0],eventQuestChapterId_,questId_)
+        return 0
+    def doquest_jq_new(self,questId_):
+        rev=self.req_binq_MainQuest_start('/apb.api.quest.QuestService/StartMainQuest','MainQuest_1',questId_)
+        revj=pb.StartEventQuestResponse.FromString(rev)
+        # self.getdrop(revj)
+        self.req_binq_new('/apb.api.battle.BattleService/StartWave','MainQuest_2',0)
+        self.req_binq_new('/apb.api.battle.BattleService/FinishWave','MainQuest_3',1)
+        self.req_binq_new('/apb.api.battle.BattleService/StartWave','MainQuest_4',0)
+        self.req_binq_new('/apb.api.battle.BattleService/FinishWave','MainQuest_5',1)
+        self.req_binq_new('/apb.api.battle.BattleService/StartWave','MainQuest_6',0)
+        self.req_binq_new('/apb.api.battle.BattleService/FinishWave','MainQuest_7',1)
+        self.req_binq_MainQuest_end('/apb.api.quest.QuestService/FinishMainQuest','MainQuest_8',questId_)
+        return 0
+    def doquest_event_new(self,eventQuestChapterId_,questId_):
+        self.req_binq_EventQuest_start('/apb.api.quest.QuestService/StartEventQuest','EventQuest_1',eventQuestChapterId_,questId_)
+        self.req_binq_new('/apb.api.battle.BattleService/StartWave','EventQuest_2',0)
+        self.req_binq_new('/apb.api.battle.BattleService/FinishWave','EventQuest_3',1)
+        self.req_binq_EventQuest_end('/apb.api.quest.QuestService/FinishEventQuest','EventQuest_4',eventQuestChapterId_,questId_)
+        return 0
+
     def doquest_jq(self,fnstep):
         if len(fnstep)==8:
             rev=self.req_binq('/apb.api.quest.QuestService/StartMainQuest',fnstep[0][0],fnstep[0][1])

@@ -2,6 +2,11 @@
 killall Python
 cd /Users/xuzhengda/Documents/codespace_pc/netw/
 /usr/local/bin/python nese.py fl > log/fl
+/usr/local/bin/python nese.py qjq 10065 1 > log/qjq
+/usr/local/bin/python nese.py qh > log/qh
+/usr/local/bin/python nese.py qe 99001 110008 1 > log/qe
+/usr/local/bin/python nese.py qe 99002 110018 1 > log/qe 
+/usr/local/bin/python nese.py qe 99003 110028 1 > log/qe 
 /usr/local/bin/python nese.py sb > log/sb
 /usr/local/bin/python nese.py mrck > log/mrck
 

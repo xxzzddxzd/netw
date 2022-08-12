@@ -583,9 +583,9 @@ class reqfuncmjzj:
             # roll=int(sys.argv[2])
             try:
                 while 1:
-                    self.GachaService_Draw(306000+roll,306000+roll,times)
+                    self.GachaService_Draw(301000+roll,301000+roll,times)
                     print('gacha done')
-                    self.GachaService_ResetBoxGachaRequest(306000+roll)
+                    self.GachaService_ResetBoxGachaRequest(301000+roll)
             except:
                 print('no more ticket')
             

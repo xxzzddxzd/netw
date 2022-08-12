@@ -438,6 +438,16 @@
 	]
 },{
 	"ftype":3,
+	"fn":"testhd",
+	"fncn":"testhd",
+	"fnstep":[
+		["testhd_69",0],
+		["testhd_72",0],
+		["testhd_73",1],
+		["testhd_74",1]
+	]
+},{
+	"ftype":3,
 	"fn":"hd0714j",
 	"fncn":"2b_gold_n7",
 	"fnstep":[
