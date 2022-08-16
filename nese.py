@@ -99,6 +99,15 @@ class reqfuncmjzj:
             k = k + chr(8).encode('utf-8') * 8
         return k
     def aa(self):
+        orijson=json.loads(open('battlerecord/config').read())
+        # print(orijson)
+        newjson=json.loads(open('battlerecord/configwithstam').read())
+        for obj in orijson:
+            # print(obj)
+            if obj not in newjson:
+                newjson[obj]=orijson[obj]
+        open('battlerecord/configwithstam','w').write(json.dumps(newjson))
+        return
         # a=open('battlereq/za21_52','rb').read()
         # print(a)
         # aaa=pb.StartEventQuest()
@@ -106,7 +115,7 @@ class reqfuncmjzj:
         # print(aaa)
         # return
             
-        da='08ba850610bcdb061804'
+        da='08ba85061084dc061804'
         da=bytes.fromhex(da)
         # print da.encode('hex')
         # da=open('battlereq/111').read()
@@ -200,15 +209,67 @@ class reqfuncmjzj:
         elif cmd=='get':
             para=str(sys.argv[2])
             self.getwhat(para)
+        elif cmd=='qn':
+            orijson=json.loads(open('battlerecord/config').read())
+            newjson=json.loads(open('battlerecord/configwithstam').read())
+            for obj in orijson:
+                if obj not in newjson:
+                    newjson[obj]=orijson[obj]
+            keytodel=[]
+            for obj in newjson:
+                if obj not in orijson:
+                    keytodel.append(obj)
+            if len(keytodel)>0:
+                for key in keytodel:
+                    del newjson[key]
+            open('battlerecord/configwithstam','w').write(json.dumps(newjson))
+            # argv[0]=nese.py,[1]='qn',[2]=obj,[3]=times
+            if len(sys.argv)<3 or sys.argv[2] not in newjson:
+                print('need obj')
+                for obj in newjson:
+                    print(obj,newjson[obj])
+                return
+            objname=sys.argv[2]
+            targettimes=1000
+            if len(sys.argv)==4:
+                targettimes=int(sys.argv[3])
+            stamcost=0
+            if len(newjson[objname])<4: # 未记录体力消耗
+                stamori=self.stam
+                if stamori<=40:
+                    return
+                self.doquest_event_new(newjson[objname][0],newjson[objname][1])
+                self.getuser()
+                stamcost=int(stamori-self.stam)
+                newjson[objname].append(stamcost)
+                open('battlerecord/configwithstam','w').write(json.dumps(newjson))
+                nowtime=1
+            else:
+                stamcost=newjson[objname][3]
+                nowtime=0
+            if targettimes==1:
+                return
+            if stamcost==0:
+                print('no stam cost, need input times')
+            else:
+                times=int(self.stam/stamcost-1)
+                if  targettimes>times:
+                    targettimes=times
+                
+                while nowtime<targettimes:
+                      self.doquest_event_new(newjson[objname][0],newjson[objname][1])
+                      nowtime+=1
+                      print('now',nowtime,'targettimes',targettimes)
         elif cmd=='qe':
+            # 周一1 1 100001
             # za11 99001 110008 
-            # za21 99002 110018   za2n1 99002 110011
+            # za21 99002 110018   za2b1 99002 110011    za2q1 99002 110012
             if len(sys.argv)<4:
                 print('need eventQuestChapterId_ and questId_')
                 pass
             eventQuestChapterId_= sys.argv[2]
             questId_=sys.argv[3]
-            targettimes=0
+            targettimes=1000
             if len(sys.argv)==5:
                 targettimes=int(sys.argv[4])
             stamori=self.stam
@@ -216,15 +277,15 @@ class reqfuncmjzj:
             self.getuser()
             if targettimes==1:
                 return
-            targettimes-=1
+            # targettimes-=1
             stamcost=stamori-self.stam
             if stamcost<0:
                 stamcost=40
             if stamcost!=0:
                 times=int(self.stam/stamcost-1)
-                if targettimes<=0 or targettimes>times:
+                if  targettimes>times:
                     targettimes=times
-            nowtime=0
+            nowtime=1
             while nowtime<targettimes:
                   self.doquest_event_new(eventQuestChapterId_,questId_)
                   nowtime+=1
@@ -434,8 +495,8 @@ class reqfuncmjzj:
                 parts_dic[part].__contains__('PT_ATTACK') and 'x' == parts_dic[part]['PT_ATTACK'][0]\
             and parts_dic[part].__contains__('CRITICAL_ATTACK') \
             and parts_dic[part].__contains__('CRITICAL_RATIO') \
-            and 60 == parts_dic[part]['CRITICAL_ATTACK'][1]\
-            and 50 == parts_dic[part]['CRITICAL_RATIO'][1]  \
+            # and 60 == parts_dic[part]['CRITICAL_ATTACK'][1]\
+            # and 50 == parts_dic[part]['CRITICAL_RATIO'][1]  \
             ) \
             or parts_dic[part]['level']!=1:
             # if parts_dic[part]['level']!=1: #sell all
@@ -778,7 +839,7 @@ class reqfuncmjzj:
         aaa.ParseFromString(body)
         aaa.eventQuestChapterId_=int(eventQuestChapterId_)
         aaa.questId_=int(questId_)
-        aaa.userDeckNumber_=4
+        aaa.userDeckNumber_=3
         body=aaa.SerializeToString()+bytes.fromhex('1804')
         # print(''.join(['%02X' % b for b in body]))
         body=self.encb(body)
