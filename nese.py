@@ -99,28 +99,20 @@ class reqfuncmjzj:
             k = k + chr(8).encode('utf-8') * 8
         return k
     def aa(self):
-        orijson=json.loads(open('battlerecord/config').read())
-        # print(orijson)
-        newjson=json.loads(open('battlerecord/configwithstam').read())
-        for obj in orijson:
-            # print(obj)
-            if obj not in newjson:
-                newjson[obj]=orijson[obj]
-        open('battlerecord/configwithstam','w').write(json.dumps(newjson))
-        return
-        # a=open('battlereq/za21_52','rb').read()
+        # a=open('battlereq/yr34_14','rb').read()
         # print(a)
         # aaa=pb.StartEventQuest()
         # aaa.ParseFromString(a)
         # print(aaa)
         # return
             
-        da='08ba85061084dc061804'
+        da='08c18506109fdc061804'
         da=bytes.fromhex(da)
         # print da.encode('hex')
         # da=open('battlereq/111').read()
         # print da.encode('hex')
-
+        # aaa=pb.StartExploreRequestReq()
+        # aaa=pb.DrawRequest()
         aaa=pb.StartEventQuest()
         aaa.ParseFromString(da)
         # aaa.gachaId_=99
@@ -139,6 +131,26 @@ class reqfuncmjzj:
                 print('done',ga)
             except:
                 print('error',ga)
+    def getcfg(self):
+        orijson=json.loads(open('battlerecord/config').read())
+        newjson=json.loads(open('battlerecord/configwithstam').read())
+        for obj in orijson:
+            if obj not in newjson:
+                newjson[obj]=orijson[obj]
+            else:
+                newjson[obj][0]=orijson[obj][0]
+                newjson[obj][1]=orijson[obj][1]
+                newjson[obj][2]=orijson[obj][2]
+        keytodel=[]
+        for obj in newjson:
+            if obj not in orijson:
+                keytodel.append(obj)
+
+        if len(keytodel)>0:
+            for key in keytodel:
+                del newjson[key]
+        open('battlerecord/configwithstam','w').write(json.dumps(newjson))
+        return newjson
     def domyac(self,cmd):
         global datahash
         self.initHeaders()
@@ -154,7 +166,7 @@ class reqfuncmjzj:
         self.GetUserDataName()
 
         if cmd=='fl': #first login
-            self.req_hex('/apb.api.data.DataService/GetUserData',open('battlereq/firstlogin','rb').read().hex())
+            self.req_hex('/apb.api.data.DataService/GetUserData',open('battlerecord/firstlogin','rb').read().hex())
             return
         self.getuser()
         self.CheckBeforeGamePlay()
@@ -164,66 +176,59 @@ class reqfuncmjzj:
         
         if cmd=='mrck':
             self.mrck()
-        elif cmd=='q':
-            jsq=json.loads(open('battlereq/config').read())
-            if len(sys.argv)<3:
-                self.loadquest(jsq)
-                return
-            target=sys.argv[2]
-            isfound=0
-            for q in jsq:
-                if q['fn']==target:
-                    fnstep=q['fnstep']
-                    isfound=1
-                    ftype=q['ftype']
-            if isfound==0:
-                self.loadquest(jsq)
-            else:
-                if ftype==10:
-                    qfun=self.doquest_jq
-                elif ftype>0 and ftype<=4:
-                    qfun=self.doquest_ty
-                if len(sys.argv)>3:
-                    times = int(sys.argv[3])
-                else:
-                    stamori=self.stam
-                    if -1==qfun(fnstep):
-                        return
-                    self.getuser()
-                    stamcost=stamori-self.stam
-                    if stamcost<0:
-                        stamcost=40
-                    if stamcost!=0:
-                        times=int(self.stam/stamcost-1)
-                    else:
-                        times=100000
-                while times>0:
-                    if -1==qfun(fnstep):
-                        return
-                    print('done '+sys.argv[2]+',',times,'left.')
-                    times-=1
-            self.getuser()
-            print(self.stam)
+        
         elif cmd=='qh':
             self.req_hex('/apb.api.weapon.WeaponService/EnhanceByMaterial','0a2436613034613337312d336435352d343762372d623963652d346232366165313361653238120608c19a0c1001')
         elif cmd=='get':
             para=str(sys.argv[2])
             self.getwhat(para)
-        elif cmd=='qn':
-            orijson=json.loads(open('battlerecord/config').read())
-            newjson=json.loads(open('battlerecord/configwithstam').read())
-            for obj in orijson:
-                if obj not in newjson:
-                    newjson[obj]=orijson[obj]
-            keytodel=[]
-            for obj in newjson:
-                if obj not in orijson:
-                    keytodel.append(obj)
-            if len(keytodel)>0:
-                for key in keytodel:
-                    del newjson[key]
-            open('battlerecord/configwithstam','w').write(json.dumps(newjson))
-            # argv[0]=nese.py,[1]='qn',[2]=obj,[3]=times
+        elif cmd=='qza': #真暗专用
+            newjson=self.getcfg()
+            objname= sys.argv[2]
+            targettimes=1000
+            
+            if len(sys.argv)<3 or sys.argv[2] not in newjson:
+                print('need obj')
+                for obj in newjson:
+                    print(obj,newjson[obj])
+                return
+            stamcost=0
+            # print('1')
+            if len(newjson[objname])<4: # 未记录体力消耗
+                stamori=self.stam
+                if stamori<=40:
+                    return
+                rev=self.doquest_event_za_new(newjson[objname][0],newjson[objname][1])
+                self.getuser()
+                stamcost=int(stamori-self.stam)
+                newjson[objname].append(stamcost)
+                open('battlerecord/configwithstam','w').write(json.dumps(newjson))
+                nowtime=1
+                if rev==1 :
+                    print('hit')
+                    return
+            else:
+                stamcost=newjson[objname][3]
+                nowtime=0
+            if targettimes==1:
+                return
+            if stamcost==0:
+                print('no stam cost, need input times')
+            else:
+                times=int(self.stam/stamcost-1)
+                if  targettimes>times:
+                    targettimes=times
+                tonext=0
+                while nowtime<targettimes and tonext==0:
+                    if 0==self.doquest_event_za_new(newjson[objname][0],newjson[objname][1]):
+                        print('no drop',nowtime,targettimes)
+                        nowtime+=1
+                    else:
+                        print('get')
+                        tonext=1
+                      # print('now',nowtime,'targettimes',targettimes)
+        elif cmd=='qn': #event专用
+            newjson=self.getcfg()
             if len(sys.argv)<3 or sys.argv[2] not in newjson:
                 print('need obj')
                 for obj in newjson:
@@ -290,10 +295,18 @@ class reqfuncmjzj:
                   self.doquest_event_new(eventQuestChapterId_,questId_)
                   nowtime+=1
                   print('now',nowtime,'targettimes',targettimes)
+        elif cmd=='qev': #event 速通
+            qecid=503
+            qid=200094
+            i=0
+            while i<1:
+                print(i+qid)
+                self.doquest_eventx8_new(qecid,i+qid)
+                i+=1
+
         elif cmd=='qjqq':
             eqcid=99002
             qq=110012
-
             while qq<10100:
                 print(qq)
                 self.doquest_jq_new(qq)
@@ -325,78 +338,7 @@ class reqfuncmjzj:
                   self.doquest_jq_new(questId_)
                   nowtime+=1
                   print('now',nowtime,'targettimes',targettimes)
-        elif cmd=='qd':
-            jsq=json.loads(open('battlereq/config').read())
-            if len(sys.argv)<3: #所有每日1次全部打完
-                for q in jsq:
-                    if q['ftype']==4:
-                        print(q['fncn'])
-                        self.doquest_ty(q['fnstep'])
-            else: #只打指定的，并且无掉落不结算
-                target= sys.argv[2]    
-                if target == 'a': #全部真暗掉落结算
-                    print('do all')
-                    total=0
-                    totalstam=0
-                    exceptlist=[]
-                    for q in jsq:
-                        if q['ftype']==4 and q['fn'] not in exceptlist:
-                            tonext=0
-                            while 1 and tonext==0:
-                                print(q['fncn'],self.stam)
-                                i=0
-                                if self.stam>30:
-                                    stamori=self.stam
-                                    if 0!=self.doquest_qd(q['fnstep']):
-                                        print('get')
-                                        tonext=1
-                                        break
-                                    self.getuser()
-                                    stamcost=stamori-self.stam
-                                    times=self.stam/stamcost-1
-                                    while i<times:
-                                        totalstam+=stamcost
-                                        if 0==self.doquest_qd(q['fnstep']):
-                                            print('no drop, try next',i,total,totalstam)
-                                        else:
-                                            print('get')
-                                            tonext=1
-                                            break
-                                        i+=1
-                                        total+=1
-                                self.getuser()
-                                if self.stam<30:
-                                    self.req_hex('/apb.api.consumableitem.ConsumableItemService/UseEffectItem','08b9171055')
-                                self.getuser()
-                            
-                else:
-                    for q in jsq:
-                        if q['fn']==target:
-                            total=0
-                            while 1:
-                                print(q['fncn'],self.stam)
-                                i=0
-                                if self.stam>30:
-                                    stamori=self.stam
-                                    if 0!=self.doquest_qd(q['fnstep']):
-                                        print('get')
-                                        return
-                                    self.getuser()
-                                    stamcost=stamori-self.stam
-                                    times=self.stam/stamcost-1
-                                    while i<times:
-                                        if 0==self.doquest_qd(q['fnstep']):
-                                            print('no drop, try next',i,total,times-i)
-                                        else:
-                                            print('get')
-                                            return
-                                        i+=1
-                                        total+=1
-                                self.getuser()
-                                if self.stam<30:
-                                    self.req_hex('/apb.api.consumableitem.ConsumableItemService/UseEffectItem','08b9171055')
-                                self.getuser()
-                            
+        
         elif cmd=='pb': #跑步
             c=pb.CageMeasurableValues(runningDistanceMeters_=10000,mamaTappedCount_=150)
             body=pb.GetMamaBannerRequest(c=c).SerializeToString()
@@ -465,9 +407,9 @@ class reqfuncmjzj:
         elif cmd=='m':
             self.cleanmail()
         elif cmd=='hdck':
-            times=1000
-            roll=7
-            hdid=300000
+            times=800
+            roll=6
+            hdid=301000
             # times=int(sys.argv[3])
             # roll=int(sys.argv[2])
             # try:
@@ -484,6 +426,9 @@ class reqfuncmjzj:
             self.partslist()
         elif cmd=='rw': #任务
             self.req_hex('/apb.api.mission.MissionService/ReceiveMissionRewardsById','0a0701020304050706')
+        elif cmd=='zack':
+            self.GachaService_Draw(209,209,1000)
+            # self.GachaService_Draw(14,5,1)
     def partslist(self):
         parts_dic = self.partslistinit()
         # 属性过滤
@@ -759,6 +704,7 @@ class reqfuncmjzj:
     def cleanmail(self):
         revj=self.GiftService_GetGiftList()
         lastgift =''
+        print(len(self.pre_list))
         while len(self.pre_list)>0:
             print(len(self.pre_list),self.pre_list[0])
             if lastgift == self.pre_list[0]:
@@ -801,21 +747,7 @@ class reqfuncmjzj:
         resp,call=requester.with_call(body,metadata=metadata)
         rev=self.decb(resp)
         self.reloadmeta(call.trailing_metadata())
-    def req_binq(self,path,binq,needsign=0):
-        # print '>call ',path,binq
-        metadata=self.refreshMetadata()
-        # print metadata
-        # body=pb.StartEventQuest(questId_= qid,eventQuestChapterId_= eventQuestChapterId_,userDeckNumber_=userDeckNumber).SerializeToString()
-        body=open('battlereq/'+binq,'rb').read()
-        if needsign==1:
-            body=bytes(body[:-40])+ self.gensha1(self.meta['x-apb-user-id']+self.meta['x-apb-token'] )
-        
-        body=self.encb(body)
-        requester = self.channel.unary_unary(path,request_serializer=self.ruencb,response_deserializer=self.redecb)
-        resp,call=requester.with_call(body,metadata=metadata)
-        rev=self.decb(resp)
-        self.reloadmeta(call.trailing_metadata())
-        return rev
+
     def req_binq_new(self,path,binq,needsign=0):
         # print '>call ',path,binq
         metadata=self.refreshMetadata()
@@ -839,8 +771,8 @@ class reqfuncmjzj:
         aaa.ParseFromString(body)
         aaa.eventQuestChapterId_=int(eventQuestChapterId_)
         aaa.questId_=int(questId_)
-        aaa.userDeckNumber_=3
-        body=aaa.SerializeToString()+bytes.fromhex('1804')
+        # aaa.userDeckNumber_=4
+        body=aaa.SerializeToString() +bytes.fromhex('1804')
         # print(''.join(['%02X' % b for b in body]))
         body=self.encb(body)
         requester = self.channel.unary_unary(path,request_serializer=self.ruencb,response_deserializer=self.redecb)
@@ -1059,55 +991,8 @@ class reqfuncmjzj:
                 return 1
         print('t:',len(dp.battleDropReward_))
         return 0
-    def doquest_qd(self,fnstep):
-        if len(fnstep)==8:
-            rev=self.req_binq('/apb.api.quest.QuestService/StartEventQuest',fnstep[0][0],fnstep[0][1])
-            revj=pb.StartEventQuestResponse.FromString(rev)
-            if 1==self.getdrop(revj):
-                self.req_binq('/apb.api.battle.BattleService/StartWave',fnstep[1][0],fnstep[1][1])
-                self.req_binq('/apb.api.battle.BattleService/FinishWave',fnstep[2][0],fnstep[2][1])
-                self.req_binq('/apb.api.battle.BattleService/StartWave',fnstep[3][0],fnstep[3][1])
-                self.req_binq('/apb.api.battle.BattleService/FinishWave',fnstep[4][0],fnstep[4][1])
-                self.req_binq('/apb.api.battle.BattleService/StartWave',fnstep[5][0],fnstep[5][1])
-                self.req_binq('/apb.api.battle.BattleService/FinishWave',fnstep[6][0],fnstep[6][1])
-                self.req_binq('/apb.api.quest.QuestService/FinishEventQuest',fnstep[7][0],fnstep[7][1])
-                return 1
-            else:
-                lastreq=open('battlereq/'+str(fnstep[7][0]),'rb').read()
-                aaa=pb.FinishEventQuestRequest()
-                aaa.ParseFromString(lastreq)
-                aaa.isRetired_=True
-                open('battlereq/tmp_last','wb').write(aaa.SerializeToString())
-                self.req_binq('/apb.api.quest.QuestService/FinishEventQuest','tmp_last',fnstep[7][1])
-            return 0
-    def doquest_ty(self,fnstep):
-        if len(fnstep)==8:
-            # self.req_binq('/apb.api.quest.QuestService/FinishEventQuest',fnstep[7][0],fnstep[7][1])
-            rev=self.req_binq('/apb.api.quest.QuestService/StartEventQuest',fnstep[0][0],fnstep[0][1])
-            revj=pb.StartEventQuestResponse.FromString(rev)
-            self.getdrop(revj)
-            self.req_binq('/apb.api.battle.BattleService/StartWave',fnstep[1][0],fnstep[1][1])
-            self.req_binq('/apb.api.battle.BattleService/FinishWave',fnstep[2][0],fnstep[2][1])
-            self.req_binq('/apb.api.battle.BattleService/StartWave',fnstep[3][0],fnstep[3][1])
-            self.req_binq('/apb.api.battle.BattleService/FinishWave',fnstep[4][0],fnstep[4][1])
-            self.req_binq('/apb.api.battle.BattleService/StartWave',fnstep[5][0],fnstep[5][1])
-            self.req_binq('/apb.api.battle.BattleService/FinishWave',fnstep[6][0],fnstep[6][1])
-            self.req_binq('/apb.api.quest.QuestService/FinishEventQuest',fnstep[7][0],fnstep[7][1])
-            return 0
-        elif len(fnstep)==4:
-            self.req_binq('/apb.api.quest.QuestService/StartEventQuest',fnstep[0][0],fnstep[0][1])
-            self.req_binq('/apb.api.battle.BattleService/StartWave',fnstep[1][0],fnstep[1][1])
-            self.req_binq('/apb.api.battle.BattleService/FinishWave',fnstep[2][0],fnstep[2][1])
-            self.req_binq('/apb.api.quest.QuestService/FinishEventQuest',fnstep[3][0],fnstep[3][1])
-            return 0
-        print('step wrong')
-        return -1
-    def doquest_test(self,fnstep,eventQuestChapterId_,questId_):
-        self.req_binq_EventQuest_start('/apb.api.quest.QuestService/StartEventQuest',fnstep[0][0],eventQuestChapterId_,questId_)
-        self.req_binq('/apb.api.battle.BattleService/StartWave',fnstep[1][0],fnstep[1][1])
-        self.req_binq('/apb.api.battle.BattleService/FinishWave',fnstep[2][0],fnstep[2][1])
-        self.req_binq_EventQuest_end('/apb.api.quest.QuestService/FinishEventQuest',fnstep[3][0],eventQuestChapterId_,questId_)
-        return 0
+    
+
     def doquest_jq_new(self,questId_):
         rev=self.req_binq_MainQuest_start('/apb.api.quest.QuestService/StartMainQuest','MainQuest_1',questId_)
         revj=pb.StartEventQuestResponse.FromString(rev)
@@ -1121,33 +1006,41 @@ class reqfuncmjzj:
         self.req_binq_MainQuest_end('/apb.api.quest.QuestService/FinishMainQuest','MainQuest_8',questId_)
         return 0
     def doquest_event_new(self,eventQuestChapterId_,questId_):
-        self.req_binq_EventQuest_start('/apb.api.quest.QuestService/StartEventQuest','EventQuest_1',eventQuestChapterId_,questId_)
-        self.req_binq_new('/apb.api.battle.BattleService/StartWave','EventQuest_2',0)
-        self.req_binq_new('/apb.api.battle.BattleService/FinishWave','EventQuest_3',1)
-        self.req_binq_EventQuest_end('/apb.api.quest.QuestService/FinishEventQuest','EventQuest_4',eventQuestChapterId_,questId_)
+        self.req_binq_EventQuest_start('/apb.api.quest.QuestService/StartEventQuest','enc_in_122',eventQuestChapterId_,questId_)
+        self.req_binq_new('/apb.api.battle.BattleService/StartWave','enc_in_125',0)
+        self.req_binq_new('/apb.api.battle.BattleService/FinishWave','enc_in_126',1)
+        self.req_binq_EventQuest_end('/apb.api.quest.QuestService/FinishEventQuest','enc_in_127',eventQuestChapterId_,questId_)
+        return 0
+    def doquest_event_za_new(self,eventQuestChapterId_,questId_):
+        rev=self.req_binq_EventQuest_start('/apb.api.quest.QuestService/StartEventQuest','enc_in_122',eventQuestChapterId_,questId_)
+        revj=pb.StartEventQuestResponse.FromString(rev)
+        if 1==self.getdrop(revj):
+            self.req_binq_new('/apb.api.battle.BattleService/StartWave','enc_in_125',0)
+            self.req_binq_new('/apb.api.battle.BattleService/FinishWave','enc_in_126',1)
+            self.req_binq_EventQuest_end('/apb.api.quest.QuestService/FinishEventQuest','enc_in_127',eventQuestChapterId_,questId_)
+            return 1
+        else:
+            lastreq=open('battlerecord/enc_in_127','rb').read()
+            aaa=pb.FinishEventQuestRequest()
+            aaa.ParseFromString(lastreq)
+            aaa.isRetired_=True
+            aaa.eventQuestChapterId_=eventQuestChapterId_
+            aaa.questId_=questId_
+            open('battlerecord/tmp_last','wb').write(aaa.SerializeToString())
+            self.req_binq_new('/apb.api.quest.QuestService/FinishEventQuest','tmp_last',1)
+        return 0
+    def doquest_eventx8_new(self,eventQuestChapterId_,questId_):
+        self.req_binq_EventQuest_start('/apb.api.quest.QuestService/StartEventQuest','EventQuestx8_1',eventQuestChapterId_,questId_)
+        self.req_binq_new('/apb.api.battle.BattleService/StartWave','EventQuestx8_2',0)
+        self.req_binq_new('/apb.api.battle.BattleService/FinishWave','EventQuestx8_3',1)
+        self.req_binq_new('/apb.api.battle.BattleService/StartWave','EventQuestx8_4',0)
+        self.req_binq_new('/apb.api.battle.BattleService/FinishWave','EventQuestx8_5',1)
+        self.req_binq_new('/apb.api.battle.BattleService/StartWave','EventQuestx8_6',0)
+        self.req_binq_new('/apb.api.battle.BattleService/FinishWave','EventQuestx8_7',1)
+        self.req_binq_EventQuest_end('/apb.api.quest.QuestService/FinishEventQuest','EventQuestx8_8',eventQuestChapterId_,questId_)
         return 0
 
-    def doquest_jq(self,fnstep):
-        if len(fnstep)==8:
-            rev=self.req_binq('/apb.api.quest.QuestService/StartMainQuest',fnstep[0][0],fnstep[0][1])
-            revj=pb.StartEventQuestResponse.FromString(rev)
-            # self.getdrop(revj)
-            self.req_binq('/apb.api.battle.BattleService/StartWave',fnstep[1][0],fnstep[1][1])
-            self.req_binq('/apb.api.battle.BattleService/FinishWave',fnstep[2][0],fnstep[2][1])
-            self.req_binq('/apb.api.battle.BattleService/StartWave',fnstep[3][0],fnstep[3][1])
-            self.req_binq('/apb.api.battle.BattleService/FinishWave',fnstep[4][0],fnstep[4][1])
-            self.req_binq('/apb.api.battle.BattleService/StartWave',fnstep[5][0],fnstep[5][1])
-            self.req_binq('/apb.api.battle.BattleService/FinishWave',fnstep[6][0],fnstep[6][1])
-            self.req_binq('/apb.api.quest.QuestService/FinishMainQuest',fnstep[7][0],fnstep[7][1])
-            return 0
-        elif len(fnstep)==4:
-            self.req_binq('/apb.api.quest.QuestService/StartEventQuest',fnstep[0][0],fnstep[0][1])
-            self.req_binq('/apb.api.battle.BattleService/StartWave',fnstep[1][0],fnstep[1][1])
-            self.req_binq('/apb.api.battle.BattleService/FinishWave',fnstep[2][0],fnstep[2][1])
-            self.req_binq('/apb.api.quest.QuestService/FinishMainQuest',fnstep[3][0],fnstep[3][1])
-            return 0
-        print('step wrong')
-        return -1
+
     def loadquest(self,jsq):
         nowtype=1
         while nowtype<20:
@@ -1180,13 +1073,13 @@ class reqfuncmjzj:
         return self.rijndael_dec(da,enckey,enciv)
     def rijndael_dec(self,todec,key,iv):
         from Crypto.Cipher import AES
-        cryptor = AES.new(key, AES.MODE_CBC, iv)
+        cryptor = AES.new(key.encode(), AES.MODE_CBC, iv.encode())
         unpad = lambda s: s[:-ord(s[len(s) - 1:])]
         return unpad(cryptor.decrypt(todec))
     def rijndael_enc(self,toenc,key,iv):
         from Crypto.Cipher import AES
         from Crypto.Util import Padding
-        cryptor = AES.new(key, AES.MODE_CBC, iv)
+        cryptor = AES.new(key.encode(), AES.MODE_CBC, iv.encode())
         # toenc = self.pad(toenc)
         # BLOCK_SIZE=16
         # pad = lambda s: str(s) + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * chr(BLOCK_SIZE - len(s) % BLOCK_SIZE)
@@ -1196,6 +1089,8 @@ class reqfuncmjzj:
         # print(toenc,len(toenc))
         if len(toenc) > 0:
             toenc = bytes(Padding.pad(toenc,16,'pkcs7'))
+        if  type(toenc) ==  type('a'):
+            toenc=toenc.encode()
         # print(len(toenc))
         return cryptor.encrypt(toenc)
         # return rjn.encrypt(toenc)
