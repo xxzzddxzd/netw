@@ -106,13 +106,13 @@ class reqfuncmjzj:
         # print(aaa)
         # return
             
-        da='08c18506109fdc061804'
+        da='08bf85061090dc061805'
         da=bytes.fromhex(da)
         # print da.encode('hex')
         # da=open('battlereq/111').read()
         # print da.encode('hex')
         # aaa=pb.StartExploreRequestReq()
-        # aaa=pb.DrawRequest()
+        aaa=pb.DrawRequest()
         aaa=pb.StartEventQuest()
         aaa.ParseFromString(da)
         # aaa.gachaId_=99
@@ -235,7 +235,7 @@ class reqfuncmjzj:
                     print(obj,newjson[obj])
                 return
             objname=sys.argv[2]
-            targettimes=1000
+            targettimes=10000
             if len(sys.argv)==4:
                 targettimes=int(sys.argv[3])
             stamcost=0
@@ -254,17 +254,18 @@ class reqfuncmjzj:
                 nowtime=0
             if targettimes==1:
                 return
-            if stamcost==0:
-                print('no stam cost, need input times')
+            if stamcost==0 :
+#                print('no stam cost, need input times')
+                times = 10000
             else:
                 times=int(self.stam/stamcost-1)
-                if  targettimes>times:
-                    targettimes=times
-                
-                while nowtime<targettimes:
-                      self.doquest_event_new(newjson[objname][0],newjson[objname][1])
-                      nowtime+=1
-                      print('now',nowtime,'targettimes',targettimes)
+            if  targettimes>times:
+                targettimes=times
+            
+            while nowtime<targettimes:
+                  self.doquest_event_new(newjson[objname][0],newjson[objname][1])
+                  nowtime+=1
+                  print('now',nowtime,'targettimes',targettimes)
         elif cmd=='qe':
             # 周一1 1 100001
             # za11 99001 110008 
@@ -407,20 +408,7 @@ class reqfuncmjzj:
         elif cmd=='m':
             self.cleanmail()
         elif cmd=='hdck':
-            times=800
-            roll=6
-            hdid=301000
-            # times=int(sys.argv[3])
-            # roll=int(sys.argv[2])
-            # try:
-            #     while 1:
-            self.GachaService_Draw(hdid+roll,hdid+roll,times)
-            print('gacha done')
-            self.GachaService_ResetBoxGachaRequest(hdid+roll)
-            # except:
-                # print('no more ticket')
-            
-            return
+            self.hdck()
         elif cmd=='sp':
             # while 1:
             self.partslist()
@@ -429,6 +417,33 @@ class reqfuncmjzj:
         elif cmd=='zack':
             self.GachaService_Draw(209,209,1000)
             # self.GachaService_Draw(14,5,1)
+        elif cmd=='dmsp':
+            while 1:
+                # try:
+                self.cleanmail()
+                self.partslist()
+                self.hdck()
+                # except:
+                #     print('material may out')
+                #     return
+    def hdck(self):
+        times=850
+        roll=7
+        hdid=302000
+        # times=int(sys.argv[3])
+        # roll=int(sys.argv[2])
+        try:
+            while 1:
+                self.GachaService_Draw(hdid+roll,hdid+roll,times)
+                print('gacha done')
+                self.GachaService_Draw(hdid+roll,hdid+roll,times)
+                print('gacha done')
+                self.GachaService_ResetBoxGachaRequest(hdid+roll)
+                print('reset done')
+        except:
+            print('no more ticket')
+        
+        return
     def partslist(self):
         parts_dic = self.partslistinit()
         # 属性过滤
@@ -440,14 +455,14 @@ class reqfuncmjzj:
                 parts_dic[part].__contains__('PT_ATTACK') and 'x' == parts_dic[part]['PT_ATTACK'][0]\
             and parts_dic[part].__contains__('CRITICAL_ATTACK') \
             and parts_dic[part].__contains__('CRITICAL_RATIO') \
-            # and 60 == parts_dic[part]['CRITICAL_ATTACK'][1]\
-            # and 50 == parts_dic[part]['CRITICAL_RATIO'][1]  \
+             and 60 == parts_dic[part]['CRITICAL_ATTACK'][1]\
+             and 50 == parts_dic[part]['CRITICAL_RATIO'][1]  \
             ) \
             or parts_dic[part]['level']!=1:
             # if parts_dic[part]['level']!=1: #sell all
             # if  need[0] in parts_dic[part] and need[1] in parts_dic[part] and need[2] in parts_dic[part]:
                 # print part,parts_dic[part]
-                print(parts_dic[part])
+#                print(parts_dic[part])
                 tosave.append(part)
         # return
         print('to save',len(tosave))
@@ -459,6 +474,7 @@ class reqfuncmjzj:
             if line not in tosave : #and parts_dic[line]['level']==1
                 todelete.append(line)
         print('to delete',len(todelete))
+        print('to delete',todelete)
         # return
         if len(todelete)>1:
             self.sellpbycon(todelete)
@@ -474,22 +490,28 @@ class reqfuncmjzj:
             print('done', end=' ')
             sys.stdout.flush()
     def partslistinit(self):
-        whitelist=[8020,8040,8060]
+        whitelist=[8020,8040,8060,8080,8100,8120]
         a=['IUserParts','IUserPartsStatusSub']
         rev0=self.GetUserData(a)
         rev=json.loads(rev0.userDataJson_[a[0]])
         print(len(rev))
         print(rev)
         parts_dic={}
+        countfornewparts={}
         for line in rev:
             # print(line)
             name = str(line['userPartsUuid'])
-            if line['partsId'] in whitelist and  name not in parts_dic :
+            # if line['partsId'] in whitelist and  
+            if name not in parts_dic :
                 # print line
                 parts_dic[name]={'id':line['partsId'],'level':line['level']}
+            if line['partsId'] not in  countfornewparts:
+                countfornewparts[line['partsId']]=1
+            else:
+                countfornewparts[line['partsId']]+=1
         # all_parts_dic = parts_dic
 
-
+        print('count parts id:',countfornewparts)
         statuskind=['UNKNOWN','AGILITY','PT_ATTACK','CRITICAL_ATTACK','CRITICAL_RATIO','EVASION_RATIO','HP','VITALITY']
         statustype=['UNKNOWN','+','x']
         statusmax=[0,0,0,60,50,0,0,0]
@@ -497,7 +519,7 @@ class reqfuncmjzj:
         # max_cr=0
         # max_atk=0
         rev=json.loads(rev0.userDataJson_[a[1]])
-        print('total:', len(rev))
+        print('total parts:', len(rev))
         for line in rev:
             name = str(line['userPartsUuid'])
             if name  in parts_dic:
@@ -530,6 +552,7 @@ class reqfuncmjzj:
         count=0
         i=0
         print(len(parts),'to sell')
+        # parts=parts[1:]
         while i<len(parts):
             todelete.append(str(parts[i]))
             count+=1
@@ -712,8 +735,9 @@ class reqfuncmjzj:
                 print('declipe maybe, ',nowgift.userGiftUuid_==self.pre_list[0])
                 if  nowgift.userGiftUuid_==self.pre_list[0]:
                     if nowgift.GiftCommon_.possessionType_==5:
-                        ptype=nowgift.GiftCommon_.possessionId_
-                        self.cailiaoSellRequestReqById(ptype)
+                        self.req_hex('/apb.api.material.MaterialService/Sell','0a0708a18d0610c0260a0708c29a0c10a20c0a0708a28d0610d20b0a0708c19a0c10f624')
+                        # ptype=nowgift.GiftCommon_.possessionId_
+                        # self.cailiaoSellRequestReqById(ptype)
                 return
             lastgift = self.pre_list[0]
             self.GiftService_ReceiveGift()
@@ -737,6 +761,7 @@ class reqfuncmjzj:
         self.pre_list=[]
         for a in revj.gift_:
             self.pre_list.append(str(a.userGiftUuid_))
+        return revj
     def GiftService_ReceiveGift(self):
         # print '>call GiftService/ReceiveGift'
         metadata=self.refreshMetadata()
