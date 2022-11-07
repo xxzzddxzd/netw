@@ -106,7 +106,7 @@ class reqfuncmjzj:
         # print(aaa)
         # return
             
-        da='08bf85061090dc061805'
+        da='08fb0310f79b0c18052001'
         da=bytes.fromhex(da)
         # print da.encode('hex')
         # da=open('battlereq/111').read()
@@ -178,7 +178,9 @@ class reqfuncmjzj:
             self.mrck()
         
         elif cmd=='qh':
-            self.req_hex('/apb.api.weapon.WeaponService/EnhanceByMaterial','0a2436613034613337312d336435352d343762372d623963652d346232366165313361653238120608c19a0c1001')
+            self.req_hex('/apb.api.weapon.WeaponService/EnhanceByMaterial','0a2463326230393435352d303461392d343632642d616335622d336338356238303266383765120608c29a0c1001')
+        elif cmd=='cf':
+            self.req_hex('/apb.api.friend.FriendService/CheerFriend','08d7b7ea86f90b')
         elif cmd=='get':
             para=str(sys.argv[2])
             self.getwhat(para)
@@ -413,7 +415,7 @@ class reqfuncmjzj:
             # while 1:
             self.partslist()
         elif cmd=='rw': #任务
-            self.req_hex('/apb.api.mission.MissionService/ReceiveMissionRewardsById','0a0701020304050706')
+            self.req_hex('/apb.api.mission.MissionService/ReceiveMissionRewardsById','0a18ffc1d72ffec1d72ffdc1d72ffcc1d72ffbc1d72ffac1d72f')
         elif cmd=='zack':
             self.GachaService_Draw(209,209,1000)
             # self.GachaService_Draw(14,5,1)
@@ -796,8 +798,8 @@ class reqfuncmjzj:
         aaa.ParseFromString(body)
         aaa.eventQuestChapterId_=int(eventQuestChapterId_)
         aaa.questId_=int(questId_)
-        # aaa.userDeckNumber_=4
-        body=aaa.SerializeToString() +bytes.fromhex('1804')
+        # aaa.userDeckNumber_=5
+        body=aaa.SerializeToString() +bytes.fromhex('1805')
         # print(''.join(['%02X' % b for b in body]))
         body=self.encb(body)
         requester = self.channel.unary_unary(path,request_serializer=self.ruencb,response_deserializer=self.redecb)

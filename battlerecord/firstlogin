@@ -1,10 +1,14 @@
 
 IUserLoginBonus
+IUserGimmickOrnamentProgress
 IUserGemLocal
 
 IUserLogin
 IUserLimitedOpen
+IUserBigHuntStatus
+IUserBigHuntMaxScore
 	IUserDeck
+IUserMainQuestFlowStatus
 IUserDeckPartsGroup
 IUserSetting
 IUserCompanion
@@ -13,9 +17,13 @@ IUserLogin
 IUserMainQuestMainFlowStatus
 IUserWeapon
 IUser
+IUserCharacterBoard
 IUserWebviewPanelMission
+IUserBigHuntProgressStatus
 IUserCostume
+IUserPartsPreset
 IUserFacebook
+IUserCharacterBoardStatusUp
 IUserWeaponNote
 IUserStatus
 IUserQuestMission
@@ -28,29 +36,42 @@ IUserLogin
 IUserWeaponStory
 IUserDeckSubWeaponGroup
 IUserExplore
-IUserShopItem
 IUserPartsGroupNote
+IUserShopItem
+&IUserEventQuestTowerAccumulationReward
 
 IUserDokan
 IUserQuestAutoOrbit
 IUserImportantItem
 IUserDeckCharacter
+IUserOmikuji
+IUserPossessionAutoConvert
+IUserMainQuestReplayFlowStatus
 IUserConsumableItem
 IUserWeaponAbility
 
 IUserParts
 IUserMainQuestProgressStatus
+IUserPartsPresetTag
+IUserPvpRecord
 IUserAutoSaleSettingDetail
 IUserMaterial
+IUserGimmickSequence
+IUserMainQuestSeasonRoute
+IUserWarning
 IUserGem
 
 IUserQuest
 IUserDeckTypeNote
+IUserCharacterBoardAbility
 IUserComebackCampaign
+IUserTripleDeck
 IUserItemMonitor
+!IUserCharacterBoardCompleteReward
 IUserExtraQuestProgressStatus
 IUserPvpDefenseDeck
 IUserMission
+IUserGimmick
 IUserShopReplaceableLineup
 
 IUserApple
@@ -59,6 +80,9 @@ IUserApple
 IUserShopReplaceable
 IUserNaviCutIn
 IUserProfile
+IUserQuestReplayFlowRewardGroup
 IUserCharacter
 IUserMissionCompletionProgress
+
+IUserMovie
 IUserPvpStatus
