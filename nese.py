@@ -106,7 +106,7 @@ class reqfuncmjzj:
         # print(aaa)
         # return
             
-        da='08fb0310f79b0c18052001'
+        da='08c5850610c6dc061801'
         da=bytes.fromhex(da)
         # print da.encode('hex')
         # da=open('battlereq/111').read()
@@ -244,6 +244,7 @@ class reqfuncmjzj:
             if len(newjson[objname])<4: # 未记录体力消耗
                 stamori=self.stam
                 if stamori<=40:
+                    print('return by no enough stam')
                     return
                 self.doquest_event_new(newjson[objname][0],newjson[objname][1])
                 self.getuser()
@@ -350,6 +351,8 @@ class reqfuncmjzj:
             while 1:
                 self.dopvp()
                 print('done pvp')
+        elif cmd=='tlyhd': #体力药活动*99
+            self.req_hex('/apb.api.consumableitem.ConsumableItemService/UseEffectItem','089d1f1053')
         elif cmd=='tly1': #体力药小08b9171001
             if self.stam>150:
                 print(self.stam)
@@ -425,13 +428,21 @@ class reqfuncmjzj:
                 self.cleanmail()
                 self.partslist()
                 self.hdck()
+                if len(self.pre_list) == 0:
+                    return
                 # except:
                 #     print('material may out')
                 #     return
     def hdck(self):
         times=850
         roll=7
-        hdid=302000
+        hdid=304000
+        # self.GachaService_Draw(hdid+roll,hdid+roll,times)
+        # self.GachaService_Draw(hdid+roll,hdid+roll,times)
+        # self.GachaService_Draw(hdid+roll,hdid+roll,times)
+        # self.GachaService_ResetBoxGachaRequest(hdid+roll)
+        # return
+
         # times=int(sys.argv[3])
         # roll=int(sys.argv[2])
         try:
@@ -476,7 +487,7 @@ class reqfuncmjzj:
             if line not in tosave : #and parts_dic[line]['level']==1
                 todelete.append(line)
         print('to delete',len(todelete))
-        print('to delete',todelete)
+        # print('to delete',todelete)
         # return
         if len(todelete)>1:
             self.sellpbycon(todelete)
@@ -492,12 +503,12 @@ class reqfuncmjzj:
             print('done', end=' ')
             sys.stdout.flush()
     def partslistinit(self):
-        whitelist=[8020,8040,8060,8080,8100,8120]
+        whitelist=[8020,8040,8060,8080,8100,8120,8200,8220,8240,8260,8280,8300]
         a=['IUserParts','IUserPartsStatusSub']
         rev0=self.GetUserData(a)
         rev=json.loads(rev0.userDataJson_[a[0]])
         print(len(rev))
-        print(rev)
+        # print(rev)
         parts_dic={}
         countfornewparts={}
         for line in rev:
