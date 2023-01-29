@@ -99,14 +99,15 @@ class reqfuncmjzj:
             k = k + chr(8).encode('utf-8') * 8
         return k
     def aa(self):
-        # a=open('battlereq/yr34_14','rb').read()
-        # print(a)
+        # a=open('tmp/enc_in_66','rb').read()
+        # # print(a)
         # aaa=pb.StartEventQuest()
+        
         # aaa.ParseFromString(a)
         # print(aaa)
         # return
             
-        da='08c5850610c6dc061801'
+        da='08bf051099850e1805'
         da=bytes.fromhex(da)
         # print da.encode('hex')
         # da=open('battlereq/111').read()
@@ -114,6 +115,7 @@ class reqfuncmjzj:
         # aaa=pb.StartExploreRequestReq()
         aaa=pb.DrawRequest()
         aaa=pb.StartEventQuest()
+        # aaa=pb.SkipQuestRequest()
         aaa.ParseFromString(da)
         # aaa.gachaId_=99
         # aaa.questId_=110080
@@ -121,6 +123,18 @@ class reqfuncmjzj:
         # print(aaa.SerializeToString().encode('hex'))
         return
     def mrck(self):    
+        # rev=self.req_hex('/apb.api.gacha.GachaService/GetGacha','0a03d48603')
+        # revj=pb.GetGachaResponse.FromString(rev)
+        # print(revj)
+
+        gidlist=[5,50002,50003,50004,50005,50006,50008]
+        for g in gidlist:
+            try:
+                print('do',g)
+                self.GachaService_Draw(g,301,1)
+                print('done',g)
+            except:
+                print('error',g)
 
         galist=['080510ad021801','08d2860310ad021801','08d3860310ad021801','08d4860310ad021801','08d5860310ad021801','08d6860310ad021801','08d8860310ae021801']
         for ga in galist:
@@ -270,9 +284,6 @@ class reqfuncmjzj:
                   nowtime+=1
                   print('now',nowtime,'targettimes',targettimes)
         elif cmd=='qe':
-            # 周一1 1 100001
-            # za11 99001 110008 
-            # za21 99002 110018   za2b1 99002 110011    za2q1 99002 110012
             if len(sys.argv)<4:
                 print('need eventQuestChapterId_ and questId_')
                 pass
@@ -300,10 +311,10 @@ class reqfuncmjzj:
                   nowtime+=1
                   print('now',nowtime,'targettimes',targettimes)
         elif cmd=='qev': #event 速通
-            qecid=503
-            qid=200094
-            i=0
-            while i<1:
+            qecid=703
+            qid=230000
+            i=1
+            while i<100:
                 print(i+qid)
                 self.doquest_eventx8_new(qecid,i+qid)
                 i+=1
@@ -421,7 +432,11 @@ class reqfuncmjzj:
             self.req_hex('/apb.api.mission.MissionService/ReceiveMissionRewardsById','0a18ffc1d72ffec1d72ffdc1d72ffcc1d72ffbc1d72ffac1d72f')
         elif cmd=='zack':
             self.GachaService_Draw(209,209,1000)
-            # self.GachaService_Draw(14,5,1)
+            # i=0
+            # while i<50:
+            #     print(i)
+            #     self.GachaService_Draw(58,1,1)
+            #     i+=1
         elif cmd=='dmsp':
             while 1:
                 # try:
@@ -436,7 +451,7 @@ class reqfuncmjzj:
     def hdck(self):
         times=850
         roll=7
-        hdid=304000
+        hdid=305000
         # self.GachaService_Draw(hdid+roll,hdid+roll,times)
         # self.GachaService_Draw(hdid+roll,hdid+roll,times)
         # self.GachaService_Draw(hdid+roll,hdid+roll,times)
@@ -703,6 +718,7 @@ class reqfuncmjzj:
         revj=pb.DrawResponse.FromString(rev)
         # print revj
         return revj
+
     def QuestService_FinishMainQuest(self,qid,isMainFlow=True):
         # print '>call QuestService/FinishMainQuest'
         metadata=self.refreshMetadata()

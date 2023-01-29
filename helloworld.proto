@@ -13,6 +13,12 @@ message GachaModeBasic{
 message GetGachaRequest{
     repeated int32 gaid=1;
 }
+message SkipQuestRequest{
+int32 questId_=1;
+int32 questType_=2;
+int32 userDeckNumber_=3;
+int32 skipCount_=4;
+}
 message Gacha{
     int32 gachaId_=1; 
 int32 gachaLabelType_=2; 

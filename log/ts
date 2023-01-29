@@ -1,5 +1,25 @@
-prd/20220922140508
-datahash prd/20220922140508
+prd/20230117115258
+datahash prd/20230117115258
 no old mission to stop
 no old mission to stop
-163.334
+214.525
+acquireStaminaCount_: 50
+exploreReward_ {
+  possessionType_: 5
+  possessionId_: 100004
+  count_: 2
+}
+exploreReward_ {
+  possessionType_: 5
+  possessionId_: 100003
+  count_: 2
+}
+exploreReward_ {
+  possessionType_: 5
+  possessionId_: 100008
+  count_: 3
+}
+
+no old mission to stop
+no old mission to stop
+431.525
